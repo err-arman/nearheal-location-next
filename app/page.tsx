@@ -1,168 +1,155 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, CheckCircle, Code, Palette, Zap } from "lucide-react"
+import { ArrowRight, Code, Heart, Users } from "lucide-react"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600"></div>
-              <h1 className="text-xl font-bold">Your App</h1>
-            </div>
-            <nav className="hidden md:flex items-center space-x-6">
-              <a href="#" className="text-sm font-medium hover:text-blue-600 transition-colors">
-                Home
-              </a>
-              <a href="#" className="text-sm font-medium hover:text-blue-600 transition-colors">
-                About
-              </a>
-              <a href="#" className="text-sm font-medium hover:text-blue-600 transition-colors">
-                Contact
-              </a>
-              <Button size="sm">Get Started</Button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
+      <section className="container mx-auto px-4 py-8 sm:py-16 text-center">
         <Badge variant="secondary" className="mb-4">
-          Next.js + shadcn/ui + Tailwind CSS
+          Healthcare • Learning • Community
         </Badge>
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Welcome to Your New
+        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+          Welcome to Nearheal
           <br />
-          Next.js Project
+          Healthcare Platform
         </h1>
-        <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
-          A modern, fully-configured Next.js project with shadcn/ui components and Tailwind CSS. Ready for you to
-          migrate your React.js application.
+        <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto px-4">
+          Your complete healthcare and learning platform, connecting professionals worldwide. Access telehealth
+          services, professional development, and a thriving community.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" className="text-lg px-8">
-            Start Building
+        <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+          <Button size="lg" className="text-lg px-8 w-full sm:w-auto">
+            Get Started
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-          <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
-            View Documentation
+          <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent w-full sm:w-auto">
+            Learn More
           </Button>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">What's Included</h2>
-        <div className="grid md:grid-cols-3 gap-8">
+      <section className="container mx-auto px-4 py-8 sm:py-16">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">Our Services</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           <Card className="text-center">
-            <CardHeader>
+            <CardHeader className="pb-4">
               <div className="mx-auto h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4">
-                <Zap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <Heart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <CardTitle>Next.js 15</CardTitle>
-              <CardDescription>
-                Latest Next.js with App Router, Server Components, and all modern features
+              <CardTitle className="text-lg sm:text-xl">Telehealth Services</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                Connect with healthcare professionals remotely for consultations and medical advice
               </CardDescription>
             </CardHeader>
           </Card>
 
           <Card className="text-center">
-            <CardHeader>
+            <CardHeader className="pb-4">
               <div className="mx-auto h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center mb-4">
                 <Code className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <CardTitle>shadcn/ui</CardTitle>
-              <CardDescription>Beautiful, accessible components built with Radix UI and Tailwind CSS</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="text-center">
-            <CardHeader>
-              <div className="mx-auto h-12 w-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center mb-4">
-                <Palette className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-              <CardTitle>Tailwind CSS</CardTitle>
-              <CardDescription>Utility-first CSS framework for rapid UI development</CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </section>
-
-      {/* Migration Checklist */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Migration Checklist</h2>
-          <Card>
-            <CardHeader>
-              <CardTitle>Steps to Migrate Your React.js Project</CardTitle>
-              <CardDescription>
-                Follow these steps to successfully migrate your existing React.js project
+              <CardTitle className="text-lg sm:text-xl">Professional Learning</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                Access courses, certifications, and continuing education for healthcare professionals
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">Set up Next.js project structure</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    ✅ Already done! This project is ready with App Router structure
-                  </p>
-                </div>
+          </Card>
+
+          <Card className="text-center sm:col-span-2 lg:col-span-1">
+            <CardHeader className="pb-4">
+              <div className="mx-auto h-12 w-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center mb-4">
+                <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
-              <div className="flex items-start space-x-3">
-                <div className="h-5 w-5 rounded-full border-2 border-slate-300 mt-0.5 flex-shrink-0"></div>
-                <div>
-                  <p className="font-medium">Move your components to the components folder</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Copy your React components to the components directory
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="h-5 w-5 rounded-full border-2 border-slate-300 mt-0.5 flex-shrink-0"></div>
-                <div>
-                  <p className="font-medium">Update routing to App Router</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Convert React Router routes to Next.js App Router pages
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="h-5 w-5 rounded-full border-2 border-slate-300 mt-0.5 flex-shrink-0"></div>
-                <div>
-                  <p className="font-medium">Replace CSS with Tailwind classes</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Gradually replace your existing CSS with Tailwind utility classes
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="h-5 w-5 rounded-full border-2 border-slate-300 mt-0.5 flex-shrink-0"></div>
-                <div>
-                  <p className="font-medium">Integrate shadcn/ui components</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Replace custom components with shadcn/ui components where applicable
-                  </p>
-                </div>
-              </div>
-            </CardContent>
+              <CardTitle className="text-lg sm:text-xl">Community Network</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                Join a global community of healthcare professionals and patients
+              </CardDescription>
+            </CardHeader>
           </Card>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 mt-16">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-slate-600 dark:text-slate-400">
-            <p>Built with Next.js, shadcn/ui, and Tailwind CSS</p>
+      {/* About Section */}
+      <section id="about" className="container mx-auto px-4 py-8 sm:py-16">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">About Nearheal</h2>
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-6 sm:mb-8 px-4">
+            Nearheal is revolutionizing healthcare by creating a comprehensive platform that bridges the gap between
+            healthcare professionals and patients. Our mission is to make quality healthcare accessible, affordable, and
+            convenient for everyone.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8 sm:mt-12">
+            <div className="text-center p-4">
+              <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-2">10K+</div>
+              <div className="text-gray-600 text-sm sm:text-base">Healthcare Professionals</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="text-2xl sm:text-3xl font-bold text-purple-600 mb-2">50K+</div>
+              <div className="text-gray-600 text-sm sm:text-base">Patients Served</div>
+            </div>
+            <div className="text-center p-4">
+              <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-2">100+</div>
+              <div className="text-gray-600 text-sm sm:text-base">Countries Reached</div>
+            </div>
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="container mx-auto px-4 py-8 sm:py-16">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Get in Touch</h2>
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-6 sm:mb-8 px-4">
+            Ready to join the Nearheal community? Contact us to learn more about our services and how we can help you
+            achieve your healthcare goals.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg sm:text-xl">Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="text-left">
+                <div className="space-y-2 text-sm sm:text-base">
+                  <p>
+                    <strong>Email:</strong> contact@nearheal.com
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> +61 451 645 094
+                  </p>
+                  <p>
+                    <strong>Address:</strong> 3/8 Mackie st, Coniston, NSW 2500, Australia
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg sm:text-xl">Business Hours</CardTitle>
+              </CardHeader>
+              <CardContent className="text-left">
+                <div className="space-y-2 text-sm sm:text-base">
+                  <p>
+                    <strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM
+                  </p>
+                  <p>
+                    <strong>Saturday:</strong> 10:00 AM - 4:00 PM
+                  </p>
+                  <p>
+                    <strong>Sunday:</strong> Closed
+                  </p>
+                  <p>
+                    <strong>Emergency:</strong> 24/7 Support Available
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
