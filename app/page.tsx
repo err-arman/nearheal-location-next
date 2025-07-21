@@ -1,155 +1,239 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { HeroSection } from "@/components/sections/HeroSection"
+import { ServicesSection } from "@/components/sections/ServicesSection"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Code, Heart, Users } from "lucide-react"
+import { MapPin, Star, ArrowRight } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import CategoryDropdown from "@/components/search/CategoryDropdown"
+import PlaceAutoComplete, { type SelectedPlace } from "@/components/search/PlaceAutoComplete"
+
+// Mock location data
+interface Location {
+  id: string
+  title: string
+  description: string
+  location: string
+  categories: string[]
+  claimStatus: string
+  gallery: string[]
+}
+
+const mockLocations: Location[] = [
+  {
+    id: "1",
+    title: "Sydney Healthcare Center",
+    description:
+      "Comprehensive healthcare services with experienced professionals providing quality medical care for all ages.",
+    location: "Sydney, NSW",
+    categories: ["Healthcare", "General Practice"],
+    claimStatus: "4.8",
+    gallery: ["https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&w=800"],
+  },
+  {
+    id: "2",
+    title: "Melbourne Nursing Services",
+    description:
+      "Professional nursing care and support services for patients in their homes and healthcare facilities.",
+    location: "Melbourne, VIC",
+    categories: ["Nursing", "Home Care"],
+    claimStatus: "4.9",
+    gallery: ["https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800"],
+  },
+  {
+    id: "3",
+    title: "Brisbane Therapy Center",
+    description:
+      "Specialized therapy services including physiotherapy, occupational therapy, and rehabilitation programs.",
+    location: "Brisbane, QLD",
+    categories: ["Therapy", "Rehabilitation"],
+    claimStatus: "4.7",
+    gallery: ["https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800"],
+  },
+]
 
 export default function HomePage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
+  const [featuredLocations, setFeaturedLocations] = useState<Location[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(null)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [initialTextValue, setInitialTextValue] = useState("")
+
+  const placeholderImage = "https://images.unsplash.com/photo-1551190822-a9333d879b1f?auto=format&fit=crop&w=800"
+
+  // Simulate fetching featured locations
+  useEffect(() => {
+    const fetchFeaturedLocations = async () => {
+      setIsLoading(true)
+      try {
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        setFeaturedLocations(mockLocations)
+      } catch (error) {
+        console.error("Error fetching featured locations:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchFeaturedLocations()
+  }, [])
+
+  const handleSearch = () => {
+    const searchParams = new URLSearchParams()
+
+    if (selectedPlace?.description?.length) {
+      console.log("selectedPlace", selectedPlace)
+      searchParams.append("search", selectedPlace.description)
+    }
+
+    if (selectedCategories?.length) {
+      searchParams.set("categories", selectedCategories.join(","))
+    }
+
+    if (selectedRegion) {
+      searchParams.append("region", selectedRegion)
+    }
+
+    const queryString = searchParams.toString()
+    const url = queryString ? `/providers?${queryString}` : "/providers"
+
+    // For now, just log the URL since we don't have a providers page
+    console.log("Navigating to:", url)
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-8 sm:py-16 text-center">
-        <Badge variant="secondary" className="mb-4">
-          Healthcare • Learning • Community
-        </Badge>
-        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-          Welcome to Nearheal
-          <br />
-          Healthcare Platform
-        </h1>
-        <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto px-4">
-          Your complete healthcare and learning platform, connecting professionals worldwide. Access telehealth
-          services, professional development, and a thriving community.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-          <Button size="lg" className="text-lg px-8 w-full sm:w-auto">
-            Get Started
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-          <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent w-full sm:w-auto">
-            Learn More
-          </Button>
-        </div>
-      </section>
+    <div className="min-h-screen">
+      <HeroSection />
 
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-8 sm:py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">Our Services</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          <Card className="text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center mb-4">
-                <Heart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+      {/* Support Services with Location Search */}
+      <section className="py-12 sm:py-20">
+        <div className="container mx-auto px-4 space-y-16 sm:space-y-32">
+          <div className="relative overflow-hidden rounded-3xl">
+            <div className="relative bg-[#FDE1D3]/80 p-4 sm:p-8 lg:p-16">
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center mb-8 sm:mb-12">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-primary-foreground mb-4">
+                    Find Your Ideal Support Services
+                  </h3>
+                  <p className="text-lg sm:text-xl text-primary-foreground/85 mb-6">
+                    Discover prime locations with comprehensive data to help you make informed decisions.
+                  </p>
+
+                  {/* Search Box */}
+                  <div className="bg-white p-3 rounded-lg shadow-lg flex flex-col md:flex-row gap-2 mt-6 sm:mt-8">
+                    <div className="relative flex-grow">
+                      <CategoryDropdown selectedItems={selectedCategories} setSelectedItems={setSelectedCategories} />
+                    </div>
+                    <div className="relative flex-grow">
+                      <PlaceAutoComplete
+                        searchType={["(cities)"]}
+                        setselectedplace={setSelectedPlace}
+                        placeholder="Search places"
+                        setInitialTextValue={setInitialTextValue}
+                      />
+                    </div>
+                    <Button className="py-3 px-6 h-12" onClick={handleSearch}>
+                      Search
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Featured Locations */}
+                <div className="mt-12 sm:mt-16">
+                  <h4 className="text-xl sm:text-2xl font-bold text-primary-foreground mb-6 text-center">
+                    Featured Providers
+                  </h4>
+
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-40">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {featuredLocations && featuredLocations.length > 0 ? (
+                        featuredLocations.map((location) => (
+                          <div
+                            key={location.id}
+                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                          >
+                            <div className="h-40 overflow-hidden">
+                              <Image
+                                src={
+                                  location.gallery && location.gallery.length > 0
+                                    ? location.gallery[0]
+                                    : placeholderImage
+                                }
+                                alt={location.title}
+                                width={400}
+                                height={160}
+                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                              />
+                            </div>
+                            <div className="p-4">
+                              <div className="flex items-center justify-between space-x-1 mb-2">
+                                {location.categories && location.categories.length > 0 && (
+                                  <span className="text-xs font-medium px-2 py-1 bg-primary/10 text-primary rounded-full">
+                                    {location.categories[0]}
+                                  </span>
+                                )}
+                                <div className="flex items-center ml-2">
+                                  <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                                  <span className="text-xs ml-1">{location.claimStatus}</span>
+                                </div>
+                              </div>
+                              <h3 className="text-lg font-bold mb-2">{location.title}</h3>
+                              <div className="flex items-center text-muted-foreground mb-2">
+                                <MapPin className="h-4 w-4 flex-shrink-0 mr-1" />
+                                <span className="text-sm truncate">{location.location}</span>
+                              </div>
+                              <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                                {location.description && location.description.length > 80
+                                  ? `${location.description.substring(0, 80)}...`
+                                  : location.description}
+                              </p>
+                              <Link
+                                href={`/providers/${location.id}`}
+                                className="text-primary hover:text-primary/80 font-medium flex items-center text-sm mt-2"
+                              >
+                                View Details
+                                <ArrowRight className="ml-1 h-3 w-3" />
+                              </Link>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="col-span-3 text-center py-8">
+                          <p>No featured locations available at the moment.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Show all button */}
+                  <div className="flex justify-center mt-8">
+                    <Button asChild>
+                      <Link
+                        href="/providers"
+                        className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-base sm:text-lg"
+                      >
+                        View All Providers
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
               </div>
-              <CardTitle className="text-lg sm:text-xl">Telehealth Services</CardTitle>
-              <CardDescription className="text-sm sm:text-base">
-                Connect with healthcare professionals remotely for consultations and medical advice
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center mb-4">
-                <Code className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <CardTitle className="text-lg sm:text-xl">Professional Learning</CardTitle>
-              <CardDescription className="text-sm sm:text-base">
-                Access courses, certifications, and continuing education for healthcare professionals
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="text-center sm:col-span-2 lg:col-span-1">
-            <CardHeader className="pb-4">
-              <div className="mx-auto h-12 w-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center mb-4">
-                <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-              <CardTitle className="text-lg sm:text-xl">Community Network</CardTitle>
-              <CardDescription className="text-sm sm:text-base">
-                Join a global community of healthcare professionals and patients
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="container mx-auto px-4 py-8 sm:py-16">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">About Nearheal</h2>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-6 sm:mb-8 px-4">
-            Nearheal is revolutionizing healthcare by creating a comprehensive platform that bridges the gap between
-            healthcare professionals and patients. Our mission is to make quality healthcare accessible, affordable, and
-            convenient for everyone.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8 sm:mt-12">
-            <div className="text-center p-4">
-              <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-2">10K+</div>
-              <div className="text-gray-600 text-sm sm:text-base">Healthcare Professionals</div>
-            </div>
-            <div className="text-center p-4">
-              <div className="text-2xl sm:text-3xl font-bold text-purple-600 mb-2">50K+</div>
-              <div className="text-gray-600 text-sm sm:text-base">Patients Served</div>
-            </div>
-            <div className="text-center p-4">
-              <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-2">100+</div>
-              <div className="text-gray-600 text-sm sm:text-base">Countries Reached</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="container mx-auto px-4 py-8 sm:py-16">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Get in Touch</h2>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-6 sm:mb-8 px-4">
-            Ready to join the Nearheal community? Contact us to learn more about our services and how we can help you
-            achieve your healthcare goals.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="text-left">
-                <div className="space-y-2 text-sm sm:text-base">
-                  <p>
-                    <strong>Email:</strong> contact@nearheal.com
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> +61 451 645 094
-                  </p>
-                  <p>
-                    <strong>Address:</strong> 3/8 Mackie st, Coniston, NSW 2500, Australia
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Business Hours</CardTitle>
-              </CardHeader>
-              <CardContent className="text-left">
-                <div className="space-y-2 text-sm sm:text-base">
-                  <p>
-                    <strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM
-                  </p>
-                  <p>
-                    <strong>Saturday:</strong> 10:00 AM - 4:00 PM
-                  </p>
-                  <p>
-                    <strong>Sunday:</strong> Closed
-                  </p>
-                  <p>
-                    <strong>Emergency:</strong> 24/7 Support Available
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      {/* Services section */}
+      <ServicesSection />
     </div>
   )
 }
