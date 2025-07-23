@@ -1,150 +1,150 @@
-"use client"
+import usePlacesAutocomplete, {
+  getDetails,
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
+import { GoogleMap } from "@react-google-maps/api";
+import { useEffect, useState } from "react";
 
-import type React from "react"
-import { useState, useRef, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { MapPin } from "lucide-react"
-
-export interface SelectedPlace {
-  main_text: string | null
-  secondary_text: string | null
-  description: string | null
-  place_id: string | null
-  lat: string | null
-  lng: string | null
+interface PlaceAutoCompleteSearchInputProps {
+  initialTextValue?: string;
+  setInitialTextValue: (value: string) => void;
+  setselectedplace: any;
+  placeholder?: string;
+  searchType: string[];
+  initialValue?: string;
 }
 
-interface PlaceAutoCompleteProps {
-  searchType?: string[]
-  setselectedplace: (place: SelectedPlace | null) => void
-  placeholder?: string
-  setInitialTextValue: (value: string) => void
-}
+const PlaceAutoComplete = (
+  BasicSearchInputProps: PlaceAutoCompleteSearchInputProps
+) => {
+  const {
+    setselectedplace,
+    setInitialTextValue,
+    placeholder,
+    searchType,
+    initialTextValue,
+    initialValue,
+  } = BasicSearchInputProps;
+  const [mapCenter, setMapCenter] = useState();
 
-// Mock places data for demonstration
-const mockPlaces = [
-  {
-    main_text: "Sydney",
-    secondary_text: "NSW, Australia",
-    description: "Sydney, NSW, Australia",
-    place_id: "ChIJP3Sa8ziYEmsRUKgyFmh9AQM",
-    lat: "-33.8688",
-    lng: "151.2093",
-  },
-  {
-    main_text: "Melbourne",
-    secondary_text: "VIC, Australia",
-    description: "Melbourne, VIC, Australia",
-    place_id: "ChIJ90260rVG1moRkM2MIXVWBAQ",
-    lat: "-37.8136",
-    lng: "144.9631",
-  },
-  {
-    main_text: "Brisbane",
-    secondary_text: "QLD, Australia",
-    description: "Brisbane, QLD, Australia",
-    place_id: "ChIJW7XvXlJakWsRMNVkTCbTkbg",
-    lat: "-27.4698",
-    lng: "153.0251",
-  },
-  {
-    main_text: "Perth",
-    secondary_text: "WA, Australia",
-    description: "Perth, WA, Australia",
-    place_id: "ChIJoQ8Q6NNMmisRkNgHFUkDlkI",
-    lat: "-31.9505",
-    lng: "115.8605",
-  },
-  {
-    main_text: "Adelaide",
-    secondary_text: "SA, Australia",
-    description: "Adelaide, SA, Australia",
-    place_id: "ChIJsU7_xgfKsGoRUeVpCQHlb9g",
-    lat: "-34.9285",
-    lng: "138.6007",
-  },
-]
+  const {
+    ready,
+    value,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    requestOptions: {
+      componentRestrictions: { country: "au" },
+      types: searchType,
+    },
+    cache: false,
+    debounce: 400,
+  });
 
-const PlaceAutoComplete: React.FC<PlaceAutoCompleteProps> = ({
-  searchType = ["(cities)"],
-  setselectedplace,
-  placeholder = "Search places",
-  setInitialTextValue,
-}) => {
-  const [inputValue, setInputValue] = useState("")
-  const [suggestions, setSuggestions] = useState<SelectedPlace[]>([])
-  const [isOpen, setIsOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const handleInputChange = (e: any) => {
+    const value = e.target.value;
+    if (value === "") {
+      setValue(value);
+      setselectedplace(null);
+      setInitialTextValue("");
+    } else {
+      setValue(value);
+    }
+  };
 
   useEffect(() => {
-    if (inputValue.length > 0) {
-      const filtered = mockPlaces.filter((place) => place.description.toLowerCase().includes(inputValue.toLowerCase()))
-      setSuggestions(filtered)
-      setIsOpen(true)
-    } else {
-      setSuggestions([])
-      setIsOpen(false)
+    if (initialTextValue) {
+      setValue(initialTextValue, false);
+      setselectedplace(null);
     }
-  }, [inputValue])
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setInputValue(value)
-    setInitialTextValue(value)
-  }
-
-  const handlePlaceSelect = (place: SelectedPlace) => {
-    setInputValue(place.description || "")
-    setselectedplace(place)
-    setIsOpen(false)
-  }
-
-  const handleInputFocus = () => {
-    if (suggestions.length > 0) {
-      setIsOpen(true)
+    if (!initialTextValue) {
+      setValue("", false);
+      setselectedplace(null);
     }
-  }
+  }, [initialTextValue]);
 
-  const handleInputBlur = () => {
-    // Delay closing to allow for click events on suggestions
-    setTimeout(() => setIsOpen(false), 200)
-  }
+  const handleSelect = (suggestion: any) => async () => {
+    let { description, place_id, structured_formatting } = suggestion;
+    description = description.replace(/, Australia$/, "");
+    // Remove state abbreviation at the end, with or without comma
+    description = description.replace(
+      /\s?(,)?\s?(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)$/,
+      ""
+    );
+    // Remove any trailing comma and space
+    description = description.replace(/,\s*$/, "");
+
+    description = description.replace(/,\s*$/, "");
+
+    setValue(description, false);
+    clearSuggestions();
+
+    try {
+      setInitialTextValue(description);
+      const geocodes = await getGeocode({ address: description });
+      const { lat, lng } = getLatLng(geocodes[0]);
+      const results = await getDetails({ placeId: place_id });
+      // @ts-ignore
+      const result = results.address_components[0].long_name;
+
+      setselectedplace({
+        description: result,
+        main_text: structured_formatting.main_text,
+        secondary_text: structured_formatting.secondary_text,
+        place_id,
+        lat: lat.toString(),
+        lng: lng.toString(),
+      });
+    } catch (error) {
+      console.error("Error getting place details", error);
+    }
+  };
+
+  const renderSuggestions = () =>
+    data.map((suggestion) => {
+      const {
+        place_id,
+        structured_formatting: { main_text, secondary_text },
+      } = suggestion;
+
+      return (
+        <div
+          className="flex items-center p-2 cursor-pointer rounded hover:bg-gray-100"
+          key={place_id}
+          onClick={handleSelect(suggestion)}
+        >
+          <div>
+            <p className="text-sm font-medium">{main_text}</p>
+            <p className="text-xs text-gray-500">{secondary_text}</p>
+          </div>
+        </div>
+      );
+    });
 
   return (
-    <div className="relative w-full">
+    <div>
+      {/* Input wrapper */}
       <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          ref={inputRef}
+        <input
           type="text"
-          placeholder={placeholder}
-          value={inputValue}
+          className={`w-full bg-white text-gray-800 rounded-md border border-gray-300 shadow-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 `}
+          value={value}
           onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          className="pl-10 h-12"
+          disabled={!ready}
+          placeholder={placeholder}
         />
       </div>
 
-      {isOpen && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-50 bg-white border border-gray-200 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-          {suggestions.map((place, index) => (
-            <button
-              key={`${place.place_id}-${index}`}
-              onClick={() => handlePlaceSelect(place)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 flex items-center space-x-3"
-            >
-              <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm truncate">{place.main_text}</div>
-                <div className="text-xs text-muted-foreground truncate">{place.secondary_text}</div>
-              </div>
-            </button>
-          ))}
+      {/* Suggestions list */}
+      {status === "OK" && (
+        <div className="absolute z-10 mt-2 bg-white shadow-md rounded-md p-2 w-full">
+          {renderSuggestions()}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PlaceAutoComplete
+export default PlaceAutoComplete;
