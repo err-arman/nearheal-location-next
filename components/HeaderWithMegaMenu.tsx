@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,35 +8,35 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Heart, LayoutDashboard, LogOut, Menu, User, X } from "lucide-react";
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { getInitials } from "@/lib/utils";
-import { JoinMenu } from "./JoinMenu";
-import { MegaMenu } from "./MegaMenu";
+} from "@/components/ui/dropdown-menu"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Heart, LayoutDashboard, LogOut, Menu, User, X } from "lucide-react"
+import { useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { getInitials } from "@/lib/utils"
+import { JoinMenu } from "./JoinMenu"
+import { MegaMenu } from "./MegaMenu"
 
 // Mock auth hook - replace with your actual auth implementation
 const useAuth = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, setUser] = useState<any>(null)
 
   const handleLogin = () => {
     // Implement your login logic
-    console.log("Login clicked");
-  };
+    console.log("Login clicked")
+  }
 
   const handleRegister = () => {
     // Implement your register logic
-    console.log("Register clicked");
-  };
+    console.log("Register clicked")
+  }
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-  };
+    setIsLoggedIn(false)
+    setUser(null)
+  }
 
   return {
     isLoggedIn,
@@ -44,29 +44,25 @@ const useAuth = () => {
     handleLogin,
     handleRegister,
     handleLogout,
-  };
-};
+  }
+}
 
 // Mock auth server info - replace with your actual configuration
 const authServerInfo = {
   url: process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3001",
   clientId: process.env.NEXT_PUBLIC_CLIENT_ID || "your-client-id",
   redirectUrl: process.env.NEXT_PUBLIC_REDIRECT_URL || "http://localhost:3000",
-};
-
-interface HeaderWithMegaMenuProps {
-  logoImageOnly?: boolean;
-  compact?: boolean;
 }
 
-export const HeaderWithMegaMenu = ({
-  logoImageOnly = false,
-  compact = false,
-}: HeaderWithMegaMenuProps) => {
-  const { isLoggedIn, handleLogin, handleRegister, handleLogout, user } =
-    useAuth();
-  const isMobile = useIsMobile();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+interface HeaderWithMegaMenuProps {
+  logoImageOnly?: boolean
+  compact?: boolean
+}
+
+export const HeaderWithMegaMenu = ({ logoImageOnly = false, compact = false }: HeaderWithMegaMenuProps) => {
+  const { isLoggedIn, handleLogin, handleRegister, handleLogout, user } = useAuth()
+  const isMobile = useIsMobile()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
     <>
@@ -75,40 +71,28 @@ export const HeaderWithMegaMenu = ({
           compact ? "h-[38px]" : "h-[64px]"
         } fixed top-0 left-0 right-0 z-[100]`}
       >
-        <div
-          className={`container mx-auto px-3 md:px-4 ${
-            compact ? "py-0 sm:py-1" : "py-2 sm:py-3"
-          }`}
-        >
+        <div className={`container mx-auto px-3 md:px-4 ${compact ? "py-0 sm:py-1" : "py-2 sm:py-3"}`}>
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/near_heal_logo.jpeg"
+                src="/placeholder.svg?height=48&width=48&text=NH"
                 alt="Nearheal Logo"
                 width={compact ? 32 : 48}
                 height={compact ? 32 : 48}
                 className="rounded-lg"
               />
-              {!logoImageOnly && (
-                <span className="font-bold text-xl text-primary">Nearheal</span>
-              )}
+              {!logoImageOnly && <span className="font-bold text-xl text-primary">Nearheal</span>}
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <MegaMenu />
               <JoinMenu />
-              <Link
-                href="/#about"
-                className="text-gray-700 hover:text-primary transition-colors"
-              >
+              <Link href="/#about" className="text-gray-700 hover:text-primary transition-colors">
                 About
               </Link>
-              <Link
-                href="/#contact"
-                className="text-gray-700 hover:text-primary transition-colors"
-              >
+              <Link href="/#contact" className="text-gray-700 hover:text-primary transition-colors">
                 Contact
               </Link>
             </nav>
@@ -131,11 +115,7 @@ export const HeaderWithMegaMenu = ({
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full overflow-hidden"
-                    >
+                    <Button variant="ghost" size="icon" className="rounded-full overflow-hidden">
                       {user?.avatarUrl ? (
                         <Image
                           src={user.avatarUrl || "/placeholder.svg"}
@@ -146,9 +126,7 @@ export const HeaderWithMegaMenu = ({
                         />
                       ) : (
                         <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                          {getInitials(
-                            user?.name ?? `${user?.firstName} ${user?.lastName}`
-                          )}
+                          {getInitials(user?.name ?? `${user?.firstName} ${user?.lastName}`)}
                         </div>
                       )}
                     </Button>
@@ -185,11 +163,7 @@ export const HeaderWithMegaMenu = ({
 
               {/* Mobile Menu Button */}
               {isMobile && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
+                <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                   {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </Button>
               )}
@@ -199,9 +173,9 @@ export const HeaderWithMegaMenu = ({
       </header>
 
       {/* Mobile Navigation */}
-    {isMobile && isMenuOpen && (
+      {isMobile && isMenuOpen && (
         <div
-          className="md:hidden py-4 border-t fade-in bg-white fixed w-full left-0 right-0 h-full overflow-auto pb-32"
+          className="md:hidden py-4 border-t bg-white fixed w-full left-0 right-0 h-screen overflow-auto pb-32 animate-in slide-in-from-top-2"
           style={{
             position: "fixed",
             top: compact ? "38px" : "64px",
@@ -211,36 +185,43 @@ export const HeaderWithMegaMenu = ({
           <div className="container mx-auto px-3 md:px-4">
             <div className="flex flex-col space-y-4">
               <nav className="flex flex-col space-y-4">
-                <MegaMenu />
-                <JoinMenu />
+                <div className="border-b pb-4">
+                  <MegaMenu />
+                </div>
+                <div className="border-b pb-4">
+                  <JoinMenu />
+                </div>
                 <Link
-                  href="/#"
-                  className="text-gray-700 hover:text-primary transition-colors px-4"
+                  href="/#about"
+                  className="text-gray-700 hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   About
                 </Link>
                 <Link
-                  href="/#"
-                  className="text-gray-700 hover:text-primary transition-colors px-4"
+                  href="/#contact"
+                  className="text-gray-700 hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   Contact
                 </Link>
                 {!isLoggedIn && (
-                  <>
+                  <div className="flex flex-col space-y-2 pt-4 border-t">
                     <Link
                       href={`${authServerInfo.url}/login?token=${authServerInfo.clientId}&redirect_url=${authServerInfo.redirectUrl}`}
-                      className="text-gray-700 hover:text-primary transition-colors px-4"
+                      className="text-center bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       Sign In
                     </Link>
-
                     <Link
                       href={`${authServerInfo.url}/register?token=${authServerInfo.clientId}&redirect_url=${authServerInfo.redirectUrl}`}
-                      className="text-gray-700 hover:text-primary transition-colors px-4"
+                      className="text-center border border-primary text-primary py-2 px-4 rounded-lg hover:bg-primary/10 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       Sign Up
                     </Link>
-                  </>
+                  </div>
                 )}
               </nav>
             </div>
@@ -248,5 +229,5 @@ export const HeaderWithMegaMenu = ({
         </div>
       )}
     </>
-  );
-};
+  )
+}
